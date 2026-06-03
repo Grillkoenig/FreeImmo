@@ -2,16 +2,16 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
+import { KANTONE } from '@/lib/kantone'
 
-type Props = {
-  compact?: boolean
-}
+type Props = { compact?: boolean }
 
 export default function SearchForm({ compact = false }: Props) {
   const router = useRouter()
   const params = useSearchParams()
 
   const [ort, setOrt] = useState(params.get('ort') ?? '')
+  const [kanton, setKanton] = useState(params.get('kanton') ?? '')
   const [modus, setModus] = useState(params.get('modus') ?? '')
   const [typ, setTyp] = useState(params.get('typ') ?? '')
   const [zimmerMin, setZimmerMin] = useState(params.get('zimmerMin') ?? '')
@@ -21,6 +21,7 @@ export default function SearchForm({ compact = false }: Props) {
     e.preventDefault()
     const query = new URLSearchParams()
     if (ort) query.set('ort', ort)
+    if (kanton) query.set('kanton', kanton)
     if (modus) query.set('modus', modus)
     if (typ) query.set('typ', typ)
     if (zimmerMin) query.set('zimmerMin', zimmerMin)
@@ -28,8 +29,7 @@ export default function SearchForm({ compact = false }: Props) {
     router.push(`/inserate?${query.toString()}`)
   }
 
-  const inputClass = 'w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:border-transparent'
-  const focusStyle = { '--tw-ring-color': 'var(--primary)' } as React.CSSProperties
+  const inputClass = 'w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition'
 
   if (compact) {
     return (
@@ -40,20 +40,19 @@ export default function SearchForm({ compact = false }: Props) {
           value={ort}
           onChange={e => setOrt(e.target.value)}
           className={inputClass}
-          style={focusStyle}
         />
-        <select value={modus} onChange={e => setModus(e.target.value)} className={inputClass} style={focusStyle}>
+        <select value={kanton} onChange={e => setKanton(e.target.value)} className={inputClass}>
+          <option value="">Alle Kantone</option>
+          {KANTONE.map(k => (
+            <option key={k.kuerzel} value={k.kuerzel}>{k.kuerzel} – {k.name}</option>
+          ))}
+        </select>
+        <select value={modus} onChange={e => setModus(e.target.value)} className={inputClass}>
           <option value="">Mieten & Kaufen</option>
           <option value="mieten">Mieten</option>
           <option value="kaufen">Kaufen</option>
         </select>
-        <button
-          type="submit"
-          className="px-6 py-2.5 rounded-lg text-white font-medium text-sm whitespace-nowrap transition-colors"
-          style={{ backgroundColor: 'var(--primary)' }}
-          onMouseOver={e => (e.currentTarget.style.backgroundColor = 'var(--primary-dark)')}
-          onMouseOut={e => (e.currentTarget.style.backgroundColor = 'var(--primary)')}
-        >
+        <button type="submit" className="btn-primary px-6 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap">
           Suchen
         </button>
       </form>
@@ -63,7 +62,7 @@ export default function SearchForm({ compact = false }: Props) {
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6">
       <div className="flex gap-1 mb-5">
-        {['', 'mieten', 'kaufen'].map(m => (
+        {(['', 'mieten', 'kaufen'] as const).map(m => (
           <button
             key={m}
             type="button"
@@ -78,7 +77,7 @@ export default function SearchForm({ compact = false }: Props) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
         <div>
           <label className="block text-xs font-medium text-gray-500 mb-1">Ort oder PLZ</label>
           <input
@@ -88,6 +87,16 @@ export default function SearchForm({ compact = false }: Props) {
             onChange={e => setOrt(e.target.value)}
             className={inputClass}
           />
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-gray-500 mb-1">Kanton</label>
+          <select value={kanton} onChange={e => setKanton(e.target.value)} className={inputClass}>
+            <option value="">Alle Kantone</option>
+            {KANTONE.map(k => (
+              <option key={k.kuerzel} value={k.kuerzel}>{k.kuerzel} – {k.name}</option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -113,7 +122,7 @@ export default function SearchForm({ compact = false }: Props) {
           </select>
         </div>
 
-        <div>
+        <div className="sm:col-span-2 lg:col-span-2">
           <label className="block text-xs font-medium text-gray-500 mb-1">Max. Preis (CHF)</label>
           <select value={preisMax} onChange={e => setPreisMax(e.target.value)} className={inputClass}>
             <option value="">Kein Limit</option>
@@ -130,14 +139,8 @@ export default function SearchForm({ compact = false }: Props) {
         </div>
       </div>
 
-      <div className="mt-4 flex justify-end">
-        <button
-          type="submit"
-          className="px-8 py-2.5 rounded-lg text-white font-semibold text-sm flex items-center gap-2 transition-colors"
-          style={{ backgroundColor: 'var(--primary)' }}
-          onMouseOver={e => (e.currentTarget.style.backgroundColor = 'var(--primary-dark)')}
-          onMouseOut={e => (e.currentTarget.style.backgroundColor = 'var(--primary)')}
-        >
+      <div className="flex justify-end">
+        <button type="submit" className="btn-primary px-8 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>

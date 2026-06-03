@@ -47,6 +47,7 @@ export default async function InseratBearbeitenPage({ params }: Props) {
           strasse: inserat.strasse,
           plz: inserat.plz,
           ort: inserat.ort,
+          kanton: inserat.kanton,
           typ: inserat.typ,
           modus: inserat.modus,
           bilder: inserat.bilder,

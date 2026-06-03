@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-
-const KANTONS = ['Zürich', 'Bern', 'Basel', 'Genf', 'Lausanne', 'Luzern', 'St. Gallen', 'Winterthur']
+import { KANTONE } from '@/lib/kantone'
 
 type Props = {
   total: number
@@ -172,18 +171,19 @@ export default function HomeHero({ total, orteCount }: Props) {
         </div>
       </section>
 
-      {/* City chips */}
-      <section className="py-10 px-4 bg-white border-b border-gray-100">
+      {/* Canton chips */}
+      <section className="py-8 px-4 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-sm font-medium text-gray-500 mb-4">Beliebte Städte</h2>
+          <h2 className="text-sm font-medium text-gray-500 mb-3">Nach Kanton suchen</h2>
           <div className="flex flex-wrap gap-2">
-            {KANTONS.map(k => (
+            {KANTONE.map(k => (
               <Link
-                key={k}
-                href={`/inserate?ort=${encodeURIComponent(k)}`}
-                className="px-4 py-2 rounded-full border border-gray-200 text-sm text-gray-700 hover:border-pink-400 hover:text-pink-600 hover:bg-pink-50 active:scale-95 transition-all"
+                key={k.kuerzel}
+                href={`/inserate?kanton=${k.kuerzel}`}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-sm text-gray-700 hover:border-pink-400 hover:text-pink-600 hover:bg-pink-50 active:scale-95 transition-all"
               >
-                {k}
+                <span className="font-semibold text-xs text-gray-400">{k.kuerzel}</span>
+                {k.name}
               </Link>
             ))}
           </div>

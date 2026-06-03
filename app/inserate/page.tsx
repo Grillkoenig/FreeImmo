@@ -7,6 +7,7 @@ import Link from 'next/link'
 
 type SearchParams = {
   ort?: string
+  kanton?: string
   modus?: string
   typ?: string
   zimmerMin?: string
@@ -23,6 +24,7 @@ async function getInserate(params: SearchParams) {
       { strasse: { contains: params.ort, mode: 'insensitive' } },
     ]
   }
+  if (params.kanton) where.kanton = params.kanton
   if (params.modus) where.modus = params.modus
   if (params.typ) where.typ = params.typ
   if (params.zimmerMin) where.zimmer = { gte: parseFloat(params.zimmerMin) }
@@ -33,7 +35,7 @@ async function getInserate(params: SearchParams) {
 function FilterBadges({ params }: { params: SearchParams }) {
   const active = Object.entries(params).filter(([k, v]) => v && k !== 'ansicht')
   if (!active.length) return null
-  const labels: Record<string, string> = { ort: 'Ort', modus: 'Modus', typ: 'Typ', zimmerMin: 'Zimmer min.', preisMax: 'Preis max.' }
+  const labels: Record<string, string> = { ort: 'Ort', kanton: 'Kanton', modus: 'Modus', typ: 'Typ', zimmerMin: 'Zimmer min.', preisMax: 'Preis max.' }
   const base = params.ansicht === 'karte' ? '/inserate?ansicht=karte' : '/inserate'
   return (
     <div className="flex flex-wrap gap-2 mb-4">

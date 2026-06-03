@@ -117,7 +117,7 @@ export default async function InseratDetailPage({ params }: Props) {
               </svg>
               <div>
                 <p className="font-medium text-gray-800">{inserat.strasse}</p>
-                <p className="text-sm text-gray-500">{inserat.plz} {inserat.ort}</p>
+                <p className="text-sm text-gray-500">{inserat.plz} {inserat.ort}{inserat.kanton ? ` · ${inserat.kanton}` : ''}</p>
               </div>
             </div>
             {inserat.lat && inserat.lng && (
@@ -168,6 +168,12 @@ export default async function InseratDetailPage({ params }: Props) {
                 <span>Ort</span>
                 <span className="font-medium text-gray-900">{inserat.ort}</span>
               </div>
+              {inserat.kanton && (
+                <div className="flex justify-between text-gray-600">
+                  <span>Kanton</span>
+                  <span className="font-medium text-gray-900">{inserat.kanton}</span>
+                </div>
+              )}
             </div>
 
             {inserat.user && (

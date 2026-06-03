@@ -75,6 +75,7 @@ model Inserat {
   ort          String
   typ          String   @default("wohnung")
   modus        String   @default("mieten")
+  kanton       String?
   bilder       String[]
   lat          Float?
   lng          Float?

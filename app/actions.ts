@@ -24,6 +24,7 @@ function parseInseratFields(formData: FormData) {
     ort: (formData.get('ort') as string).trim(),
     typ: formData.get('typ') as string,
     modus: formData.get('modus') as string,
+    kanton: (formData.get('kanton') as string) || null,
     aktiv: formData.get('aktiv') !== 'false',
   }
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import ImageUpload from './ImageUpload'
 import { createInserat, updateInserat } from '@/app/actions'
+import { KANTONE } from '@/lib/kantone'
 
 const inputClass = 'w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition'
 const labelClass = 'block text-sm font-medium text-gray-700 mb-1'
@@ -17,6 +18,7 @@ type InitialData = {
   strasse: string
   plz: string
   ort: string
+  kanton: string | null
   typ: string
   modus: string
   bilder: string[]
@@ -121,6 +123,15 @@ export default function InseratForm({ initialData }: Props) {
               <label htmlFor="ort" className={labelClass}>Ort <span style={{ color: 'var(--primary)' }}>*</span></label>
               <input id="ort" name="ort" type="text" required placeholder="Zürich" defaultValue={initialData?.ort} className={inputClass} />
             </div>
+          </div>
+          <div>
+            <label htmlFor="kanton" className={labelClass}>Kanton <span style={{ color: 'var(--primary)' }}>*</span></label>
+            <select id="kanton" name="kanton" required defaultValue={initialData?.kanton ?? ''} className={inputClass}>
+              <option value="">Kanton wählen…</option>
+              {KANTONE.map(k => (
+                <option key={k.kuerzel} value={k.kuerzel}>{k.kuerzel} – {k.name}</option>
+              ))}
+            </select>
           </div>
         </div>
       </section>
