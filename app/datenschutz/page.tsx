@@ -18,11 +18,14 @@ export default function DatenschutzPage() {
         <Section nr="1" titel="Verantwortliche Stelle">
           <p>Verantwortlich für die Datenverarbeitung auf dieser Website ist:</p>
           <address className="not-italic mt-3 bg-gray-50 rounded-xl p-4 text-sm space-y-1 border border-gray-200">
-            <p className="text-gray-400">[Name des Unternehmens oder Vor- und Nachname]</p>
-            <p className="text-gray-400">[Strasse und Hausnummer]</p>
-            <p className="text-gray-400">[PLZ und Ort]</p>
-            <p className="text-gray-400">[E-Mail-Adresse]</p>
-            <p className="text-gray-400">[Telefonnummer]</p>
+            <p className="font-medium text-gray-800">FreeImmo</p>
+            <p className="text-gray-600">Schlössliweg 5</p>
+            <p className="text-gray-600">8500 Frauenfeld</p>
+            <p className="text-gray-600">
+              <a href="mailto:admin@freeimmo.ch" className="hover:underline" style={{ color: 'var(--primary)' }}>
+                admin@freeimmo.ch
+              </a>
+            </p>
           </address>
         </Section>
 
