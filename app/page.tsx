@@ -30,11 +30,16 @@ async function getLatestInserate() {
 }
 
 async function getStats() {
-  const [total, orte] = await Promise.all([
+  const today = startOfToday()
+  const startOfYear = new Date(new Date().getFullYear(), 0, 1)
+
+  const [total, orte, viewsHeute, viewsJahr] = await Promise.all([
     prisma.inserat.count({ where: { aktiv: true } }),
     prisma.inserat.findMany({ where: { aktiv: true }, select: { ort: true }, distinct: ['ort'] }),
+    prisma.inseratView.count({ where: { createdAt: { gte: today } } }),
+    prisma.inseratView.count({ where: { createdAt: { gte: startOfYear } } }),
   ])
-  return { total, orteCount: orte.length }
+  return { total, orteCount: orte.length, viewsHeute, viewsJahr }
 }
 
 export default async function HomePage() {
@@ -42,7 +47,7 @@ export default async function HomePage() {
 
   return (
     <div>
-      <HomeHero total={stats.total} orteCount={stats.orteCount} />
+      <HomeHero total={stats.total} orteCount={stats.orteCount} viewsHeute={stats.viewsHeute} viewsJahr={stats.viewsJahr} />
 
       {/* Latest listings */}
       <section className="py-12 px-4">
