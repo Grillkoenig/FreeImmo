@@ -76,6 +76,8 @@ model Inserat {
   typ          String   @default("wohnung")
   modus        String   @default("mieten")
   bilder       String[]
+  lat          Float?
+  lng          Float?
   aktiv        Boolean  @default(true)
   userId       String
   user         User     @relation(fields: [userId], references: [id])

@@ -6,6 +6,7 @@ import { join } from 'path'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { geocodeAddress } from '@/lib/geocode'
 
 function parseInseratFields(formData: FormData) {
   const preis = parseInt(formData.get('preis') as string)
@@ -30,8 +31,7 @@ function parseInseratFields(formData: FormData) {
 async function deleteUploadedFiles(bilder: string[]) {
   for (const url of bilder) {
     if (!url.startsWith('/uploads/')) continue
-    const filepath = join(process.cwd(), 'public', url)
-    await unlink(filepath).catch(() => {})
+    await unlink(join(process.cwd(), 'public', url)).catch(() => {})
   }
 }
 
@@ -39,9 +39,13 @@ export async function createInserat(formData: FormData) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) redirect('/login?callbackUrl=/inserat-aufgeben')
 
+  const fields = parseInseratFields(formData)
+  const coords = await geocodeAddress(fields.strasse, fields.plz, fields.ort)
+
   const inserat = await prisma.inserat.create({
     data: {
-      ...parseInseratFields(formData),
+      ...fields,
+      ...coords,
       bilder: formData.getAll('bilder').map(String).filter(Boolean),
       userId: session.user.id,
     },
@@ -55,16 +59,33 @@ export async function updateInserat(formData: FormData) {
   if (!session?.user?.id) redirect('/login')
 
   const id = formData.get('id') as string
-  const existing = await prisma.inserat.findUnique({ where: { id }, select: { userId: true, bilder: true } })
+  const existing = await prisma.inserat.findUnique({
+    where: { id },
+    select: { userId: true, bilder: true, strasse: true, plz: true, ort: true },
+  })
   if (!existing || existing.userId !== session.user.id) throw new Error('Nicht autorisiert')
 
+  const fields = parseInseratFields(formData)
   const newBilder = formData.getAll('bilder').map(String).filter(Boolean)
-  const removedBilder = existing.bilder.filter(b => !newBilder.includes(b))
-  await deleteUploadedFiles(removedBilder)
+  await deleteUploadedFiles(existing.bilder.filter(b => !newBilder.includes(b)))
+
+  // Re-geocode only if address changed
+  let coords: { lat: number; lng: number } | null = null
+  if (
+    fields.strasse !== existing.strasse ||
+    fields.plz !== existing.plz ||
+    fields.ort !== existing.ort
+  ) {
+    coords = await geocodeAddress(fields.strasse, fields.plz, fields.ort)
+  }
 
   await prisma.inserat.update({
     where: { id },
-    data: { ...parseInseratFields(formData), bilder: newBilder },
+    data: {
+      ...fields,
+      bilder: newBilder,
+      ...(coords ? coords : {}),
+    },
   })
 
   redirect(`/inserate/${id}`)
@@ -80,6 +101,5 @@ export async function deleteInserat(formData: FormData) {
 
   await deleteUploadedFiles(existing.bilder)
   await prisma.inserat.delete({ where: { id } })
-
   redirect('/meine-inserate?deleted=1')
 }

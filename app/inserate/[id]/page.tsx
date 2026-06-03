@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import GalleryViewer from '@/components/GalleryViewer'
 import DeleteButton from '@/components/DeleteButton'
+import DetailMap from '@/components/DetailMap'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -109,7 +110,7 @@ export default async function InseratDetailPage({ params }: Props) {
           {/* Location */}
           <div>
             <h2 className="text-lg font-semibold text-gray-900 mb-3">Lage</h2>
-            <div className="bg-gray-100 rounded-xl p-4 flex items-center gap-3">
+            <div className="bg-gray-100 rounded-xl p-4 flex items-center gap-3 mb-4">
               <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -119,6 +120,22 @@ export default async function InseratDetailPage({ params }: Props) {
                 <p className="text-sm text-gray-500">{inserat.plz} {inserat.ort}</p>
               </div>
             </div>
+            {inserat.lat && inserat.lng && (
+              <div style={{ height: '280px' }}>
+                <DetailMap
+                  lat={inserat.lat}
+                  lng={inserat.lng}
+                  id={inserat.id}
+                  titel={inserat.titel}
+                  preis={inserat.preis}
+                  zimmer={inserat.zimmer}
+                  flaeche={inserat.flaeche}
+                  ort={inserat.ort}
+                  modus={inserat.modus}
+                  bilder={inserat.bilder}
+                />
+              </div>
+            )}
           </div>
         </div>
 
