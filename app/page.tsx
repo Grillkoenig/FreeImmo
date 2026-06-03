@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma'
 import SearchForm from '@/components/SearchForm'
 import InseratCard from '@/components/InseratCard'
 
+export const dynamic = 'force-dynamic'
+
 async function getLatestInserate() {
   return prisma.inserat.findMany({
     where: { aktiv: true },
