@@ -31,7 +31,7 @@ export default function RegisterPage() {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-0.5 mb-6">
+          <Link href="/" className="inline-flex items-center mb-6">
             <span className="text-3xl font-bold" style={{ color: 'var(--primary)' }}>Free</span>
             <span className="text-3xl font-bold text-gray-900">Immo</span>
           </Link>
