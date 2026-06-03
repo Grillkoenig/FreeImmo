@@ -29,7 +29,21 @@ async function getInserate(params: SearchParams) {
   if (params.typ) where.typ = params.typ
   if (params.zimmerMin) where.zimmer = { gte: parseFloat(params.zimmerMin) }
   if (params.preisMax) where.preis = { lte: parseInt(params.preisMax) }
-  return prisma.inserat.findMany({ where, orderBy: { createdAt: 'desc' } })
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const inserate = await prisma.inserat.findMany({
+    where,
+    orderBy: { createdAt: 'desc' },
+    include: { _count: { select: { views: true } } },
+  })
+  const ids = inserate.map(i => i.id)
+  const todayCounts = await prisma.inseratView.groupBy({
+    by: ['inseratId'],
+    where: { inseratId: { in: ids }, createdAt: { gte: today } },
+    _count: { id: true },
+  })
+  const todayMap = Object.fromEntries(todayCounts.map(t => [t.inseratId, t._count.id]))
+  return inserate.map(i => ({ ...i, viewsTotal: i._count.views, viewsHeute: todayMap[i.id] ?? 0 }))
 }
 
 function FilterBadges({ params }: { params: SearchParams }) {

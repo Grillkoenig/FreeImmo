@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 import GalleryViewer from '@/components/GalleryViewer'
 import DeleteButton from '@/components/DeleteButton'
 import DetailMap from '@/components/DetailMap'
+import TrackView from '@/components/TrackView'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -21,6 +22,13 @@ export default async function InseratDetailPage({ params }: Props) {
 
   if (!inserat || !inserat.aktiv) notFound()
   const isOwner = session?.user?.id === inserat.userId
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const [viewsTotal, viewsHeute] = await Promise.all([
+    prisma.inseratView.count({ where: { inseratId: id } }),
+    prisma.inseratView.count({ where: { inseratId: id, createdAt: { gte: today } } }),
+  ])
 
   const placeholder = `https://placehold.co/1200x600/e8f4f8/64748b?text=${encodeURIComponent(inserat.ort)}`
   const bilder = inserat.bilder.length > 0 ? inserat.bilder : [placeholder]
@@ -55,6 +63,8 @@ export default async function InseratDetailPage({ params }: Props) {
           </div>
         )}
       </div>
+
+      <TrackView inseratId={id} />
 
       {/* Image gallery */}
       <GalleryViewer bilder={bilder} titel={inserat.titel} />
@@ -201,6 +211,13 @@ export default async function InseratDetailPage({ params }: Props) {
 
             <p className="text-xs text-gray-400 text-center mt-3">
               Inseriert am {new Date(inserat.createdAt).toLocaleDateString('de-CH')}
+            </p>
+            <p className="text-[11px] text-gray-400 text-center mt-1 flex items-center justify-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              {viewsTotal} gesamt · {viewsHeute} heute
             </p>
           </div>
         </div>

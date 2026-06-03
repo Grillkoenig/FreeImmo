@@ -5,12 +5,28 @@ import HomeHero from '@/components/HomeHero'
 
 export const dynamic = 'force-dynamic'
 
+function startOfToday() {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
 async function getLatestInserate() {
-  return prisma.inserat.findMany({
+  const today = startOfToday()
+  const inserate = await prisma.inserat.findMany({
     where: { aktiv: true },
     orderBy: { createdAt: 'desc' },
     take: 6,
+    include: { _count: { select: { views: true } } },
   })
+  const ids = inserate.map(i => i.id)
+  const todayCounts = await prisma.inseratView.groupBy({
+    by: ['inseratId'],
+    where: { inseratId: { in: ids }, createdAt: { gte: today } },
+    _count: { id: true },
+  })
+  const todayMap = Object.fromEntries(todayCounts.map(t => [t.inseratId, t._count.id]))
+  return inserate.map(i => ({ ...i, viewsTotal: i._count.views, viewsHeute: todayMap[i.id] ?? 0 }))
 }
 
 async function getStats() {

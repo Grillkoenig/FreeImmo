@@ -81,7 +81,18 @@ model Inserat {
   lng          Float?
   aktiv        Boolean  @default(true)
   userId       String
-  user         User     @relation(fields: [userId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+  views        InseratView[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model InseratView {
+  id        String   @id @default(cuid())
+  inseratId String
+  inserat   Inserat  @relation(fields: [inseratId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([inseratId])
+  @@index([inseratId, createdAt])
 }
