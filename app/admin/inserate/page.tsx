@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { adminToggleInserat, adminDeleteInserat } from '@/app/admin/actions'
+import AdminInserateActions from './actions-ui'
 
 export default async function AdminInseratePage() {
   const inserate = await prisma.inserat.findMany({
@@ -10,11 +11,9 @@ export default async function AdminInseratePage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Inserate</h1>
-          <p className="text-gray-500 text-sm mt-1">{inserate.length} total</p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Inserate</h1>
+        <p className="text-gray-500 text-sm mt-1">{inserate.length} total</p>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -65,15 +64,11 @@ export default async function AdminInseratePage() {
                   </form>
                 </td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`/inserate/${i.id}/bearbeiten`}
-                      className="text-xs text-gray-500 hover:text-gray-900 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
-                    >
-                      Bearbeiten
-                    </Link>
-                    <AdminDeleteInseratButton id={i.id} />
-                  </div>
+                  <AdminInserateActions
+                    id={i.id}
+                    titel={i.titel}
+                    deleteAction={adminDeleteInserat}
+                  />
                 </td>
               </tr>
             ))}
@@ -85,22 +80,5 @@ export default async function AdminInseratePage() {
         )}
       </div>
     </div>
-  )
-}
-
-function AdminDeleteInseratButton({ id }: { id: string }) {
-  return (
-    <form action={adminDeleteInserat}>
-      <input type="hidden" name="id" value={id} />
-      <button
-        type="submit"
-        className="text-xs text-red-600 border border-red-200 rounded px-2 py-1 hover:bg-red-50 transition-colors"
-        onClick={e => {
-          if (!confirm('Inserat wirklich löschen?')) e.preventDefault()
-        }}
-      >
-        Löschen
-      </button>
-    </form>
   )
 }

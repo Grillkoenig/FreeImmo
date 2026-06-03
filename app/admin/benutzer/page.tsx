@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { adminSetRole, adminDeleteUser } from '@/app/admin/actions'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
+import AdminUserActions from './actions-ui'
 
 export default async function AdminBenutzerPage() {
   const [users, session] = await Promise.all([
@@ -63,37 +64,18 @@ export default async function AdminBenutzerPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      {!isSelf && (
-                        <>
-                          <form action={adminSetRole}>
-                            <input type="hidden" name="id" value={u.id} />
-                            <input type="hidden" name="role" value={u.role === 'admin' ? 'user' : 'admin'} />
-                            <button
-                              type="submit"
-                              className="text-xs text-blue-600 border border-blue-200 rounded px-2 py-1 hover:bg-blue-50 transition-colors whitespace-nowrap"
-                            >
-                              {u.role === 'admin' ? '→ User' : '→ Admin'}
-                            </button>
-                          </form>
-                          <form action={adminDeleteUser}>
-                            <input type="hidden" name="id" value={u.id} />
-                            <button
-                              type="submit"
-                              className="text-xs text-red-600 border border-red-200 rounded px-2 py-1 hover:bg-red-50 transition-colors"
-                              onClick={e => {
-                                if (!confirm(`Benutzer «${u.email}» und alle ${u._count.inserate} Inserate wirklich löschen?`)) e.preventDefault()
-                              }}
-                            >
-                              Löschen
-                            </button>
-                          </form>
-                        </>
-                      )}
-                      {isSelf && (
-                        <span className="text-xs text-gray-400 italic">Du selbst</span>
-                      )}
-                    </div>
+                    {isSelf ? (
+                      <span className="text-xs text-gray-400 italic">Du selbst</span>
+                    ) : (
+                      <AdminUserActions
+                        id={u.id}
+                        email={u.email}
+                        role={u.role}
+                        inserateCount={u._count.inserate}
+                        setRoleAction={adminSetRole}
+                        deleteAction={adminDeleteUser}
+                      />
+                    )}
                   </td>
                 </tr>
               )
