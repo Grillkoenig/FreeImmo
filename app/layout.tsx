@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
               <p className="text-gray-500 text-sm">© 2026 FreeImmo. Alle Rechte vorbehalten.</p>
               <div className="flex gap-6 text-sm text-gray-500">
-                <a href="#" className="hover:text-gray-900">Datenschutz</a>
+                <a href="/datenschutz" className="hover:text-gray-900">Datenschutz</a>
                 <a href="#" className="hover:text-gray-900">AGB</a>
                 <a href="#" className="hover:text-gray-900">Kontakt</a>
               </div>
