@@ -86,6 +86,7 @@ export default function InseratForm({ initialData, redirectTo }: Props) {
               <option value="wohnung">Wohnung</option>
               <option value="haus">Haus</option>
               <option value="studio">Studio</option>
+              <option value="studentenwohnung">Studentenwohnung</option>
               <option value="gewerbe">Gewerbe</option>
             </select>
           </div>

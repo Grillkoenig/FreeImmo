@@ -41,7 +41,7 @@ export default async function AdminInseratePage() {
                   {i.user.email}
                 </td>
                 <td className="px-4 py-3 hidden lg:table-cell">
-                  <span className="capitalize text-gray-600">{i.typ}</span>
+                  <span className="text-gray-600">{{ wohnung: 'Wohnung', haus: 'Haus', studio: 'Studio', studentenwohnung: 'Studentenwohnung', gewerbe: 'Gewerbe' }[i.typ] ?? i.typ}</span>
                   <span className="text-gray-300 mx-1">·</span>
                   <span className="capitalize text-gray-600">{i.modus}</span>
                 </td>

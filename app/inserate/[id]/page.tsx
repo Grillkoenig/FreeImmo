@@ -35,7 +35,8 @@ export default async function InseratDetailPage({ params }: Props) {
   const bilder = inserat.bilder.length > 0 ? inserat.bilder : [placeholder]
 
   const modusLabel = inserat.modus === 'mieten' ? 'Mieten' : 'Kaufen'
-  const typLabel = inserat.typ.charAt(0).toUpperCase() + inserat.typ.slice(1)
+  const typLabels: Record<string, string> = { wohnung: 'Wohnung', haus: 'Haus', studio: 'Studio', studentenwohnung: 'Studentenwohnung', gewerbe: 'Gewerbe' }
+  const typLabel = typLabels[inserat.typ] ?? (inserat.typ.charAt(0).toUpperCase() + inserat.typ.slice(1))
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

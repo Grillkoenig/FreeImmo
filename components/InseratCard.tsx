@@ -35,7 +35,7 @@ export default function InseratCard({ inserat }: { inserat: Inserat }) {
           {inserat.modus === 'mieten' ? 'Mieten' : 'Kaufen'}
         </span>
         <span className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700">
-          {inserat.typ.charAt(0).toUpperCase() + inserat.typ.slice(1)}
+          {{ wohnung: 'Wohnung', haus: 'Haus', studio: 'Studio', studentenwohnung: 'Studentenwohnung', gewerbe: 'Gewerbe' }[inserat.typ] ?? inserat.typ}
         </span>
       </div>
 
