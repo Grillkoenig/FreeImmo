@@ -29,9 +29,10 @@ type InitialData = {
 
 type Props = {
   initialData?: InitialData
+  redirectTo?: string
 }
 
-export default function InseratForm({ initialData }: Props) {
+export default function InseratForm({ initialData, redirectTo }: Props) {
   const isEdit = !!initialData
   const [imageUrls, setImageUrls] = useState<string[]>(initialData?.bilder ?? [])
   const [dokumenteUrls, setDokumenteUrls] = useState<string[]>(initialData?.dokumente ?? [])
@@ -41,6 +42,7 @@ export default function InseratForm({ initialData }: Props) {
     imageUrls.forEach(url => formData.append('bilder', url))
     dokumenteUrls.forEach(url => formData.append('dokumente', url))
     formData.set('aktiv', String(aktiv))
+    if (redirectTo) formData.set('redirectTo', redirectTo)
     if (isEdit) {
       formData.set('id', initialData.id)
       await updateInserat(formData)

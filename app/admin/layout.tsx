@@ -8,6 +8,7 @@ const NAV = [
   { href: '/admin/inserate', label: 'Inserate' },
   { href: '/admin/benutzer', label: 'Benutzer' },
   { href: '/admin/einstellungen', label: 'Einstellungen' },
+  { href: '/admin/datenbank', label: 'Datenbank' },
 ]
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

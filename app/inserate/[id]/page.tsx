@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -211,9 +212,12 @@ export default async function InseratDetailPage({ params }: Props) {
                 <span className="font-medium text-gray-900">{inserat.ort}</span>
               </div>
               {inserat.kanton && (
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between items-center text-gray-600">
                   <span>Kanton</span>
-                  <span className="font-medium text-gray-900">{inserat.kanton}</span>
+                  <span className="font-medium text-gray-900 flex items-center gap-1.5">
+                    <Image src={`/wappen/${inserat.kanton}.svg`} alt={inserat.kanton} width={16} height={16} />
+                    {inserat.kanton}
+                  </span>
                 </div>
               )}
             </div>

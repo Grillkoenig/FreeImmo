@@ -55,7 +55,6 @@ export async function adminDeleteUser(formData: FormData) {
   const inserate = await prisma.inserat.findMany({ where: { userId: id }, select: { bilder: true } })
   for (const i of inserate) await deleteFiles(i.bilder)
 
-  // Cascade deletes inserate, accounts, sessions via DB relation
   await prisma.user.delete({ where: { id } })
   revalidatePath('/admin/benutzer')
 }

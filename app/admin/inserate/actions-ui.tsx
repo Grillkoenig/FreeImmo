@@ -24,7 +24,7 @@ export default function AdminInserateActions({ id, titel, deleteAction }: Props)
   return (
     <div className="flex items-center gap-2">
       <Link
-        href={`/inserate/${id}/bearbeiten`}
+        href={`/inserate/${id}/bearbeiten?from=admin`}
         className="text-xs text-gray-500 hover:text-gray-900 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
       >
         Bearbeiten

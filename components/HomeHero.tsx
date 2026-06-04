@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { KANTONE } from '@/lib/kantone'
 
 type Props = {
@@ -193,8 +194,9 @@ export default function HomeHero({ total, orteCount, viewsHeute, viewsJahr }: Pr
               <Link
                 key={k.kuerzel}
                 href={`/inserate?kanton=${k.kuerzel}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-200 text-sm text-gray-700 hover:border-pink-400 hover:text-pink-600 hover:bg-pink-50 active:scale-95 transition-all"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 text-sm text-gray-700 hover:border-pink-400 hover:text-pink-600 hover:bg-pink-50 active:scale-95 transition-all"
               >
+                <Image src={`/wappen/${k.kuerzel}.svg`} alt={k.name} width={16} height={16} className="flex-shrink-0" />
                 <span className="font-semibold text-xs text-gray-400">{k.kuerzel}</span>
                 {k.name}
               </Link>

@@ -63,11 +63,13 @@ export async function updateInserat(formData: FormData) {
   if (!session?.user?.id) redirect('/login')
 
   const id = formData.get('id') as string
+  const redirectTo = (formData.get('redirectTo') as string) || `/inserate/${id}`
   const existing = await prisma.inserat.findUnique({
     where: { id },
     select: { userId: true, bilder: true, strasse: true, plz: true, ort: true, kanton: true },
   })
-  if (!existing || existing.userId !== session.user.id) throw new Error('Nicht autorisiert')
+  const isAdmin = session.user.role === 'admin'
+  if (!existing || (existing.userId !== session.user.id && !isAdmin)) throw new Error('Nicht autorisiert')
 
   const fields = parseInseratFields(formData)
   const newBilder = formData.getAll('bilder').map(String).filter(Boolean)
@@ -96,7 +98,7 @@ export async function updateInserat(formData: FormData) {
     },
   })
 
-  redirect(`/inserate/${id}`)
+  redirect(redirectTo)
 }
 
 export async function deleteInserat(formData: FormData) {
