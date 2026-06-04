@@ -57,6 +57,7 @@ model InseratView {
   inseratId String
   inserat   Inserat  @relation(fields: [inseratId], references: [id], onDelete: Cascade)
   ip        String?
+  ipDomain  String?
   host      String?
   createdAt DateTime @default(now())
 
