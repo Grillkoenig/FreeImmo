@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { adminToggleRegistration } from '@/app/admin/actions'
 
 async function getStats() {
   const [
@@ -39,7 +40,12 @@ async function getRecent() {
 }
 
 export default async function AdminDashboard() {
-  const [stats, recent] = await Promise.all([getStats(), getRecent()])
+  const [stats, recent, settings] = await Promise.all([
+    getStats(),
+    getRecent(),
+    prisma.settings.findUnique({ where: { id: 'default' } }),
+  ])
+  const registrationEnabled = settings?.registrationEnabled ?? true
 
   const statCards = [
     { label: 'Benutzer gesamt', value: stats.totalUsers, sub: `+${stats.newUsersLast7} diese Woche`, color: 'bg-blue-50 text-blue-700' },
@@ -53,6 +59,30 @@ export default async function AdminDashboard() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Admin-Dashboard</h1>
         <p className="text-gray-500 text-sm mt-1">Plattform-Übersicht</p>
+      </div>
+
+      {/* Quick settings */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold text-gray-900">Registrierung neuer Benutzer</p>
+          <p className={`text-xs mt-0.5 ${registrationEnabled ? 'text-green-600' : 'text-red-600'}`}>
+            {registrationEnabled ? 'Geöffnet — neue Konten können erstellt werden' : 'Gesperrt — neue Konten sind deaktiviert'}
+          </p>
+        </div>
+        <form action={adminToggleRegistration}>
+          <button
+            type="submit"
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              registrationEnabled ? 'bg-green-500 focus:ring-green-500' : 'bg-gray-300 focus:ring-gray-400'
+            }`}
+            role="switch"
+            aria-checked={registrationEnabled}
+          >
+            <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+              registrationEnabled ? 'translate-x-6' : 'translate-x-1'
+            }`} />
+          </button>
+        </form>
       </div>
 
       {/* Stat cards */}

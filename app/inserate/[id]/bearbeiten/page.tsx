@@ -51,6 +51,7 @@ export default async function InseratBearbeitenPage({ params }: Props) {
           typ: inserat.typ,
           modus: inserat.modus,
           bilder: inserat.bilder,
+          dokumente: inserat.dokumente,
           aktiv: inserat.aktiv,
         }}
       />

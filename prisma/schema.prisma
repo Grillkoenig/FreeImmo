@@ -77,6 +77,7 @@ model Inserat {
   modus        String   @default("mieten")
   kanton       String?
   bilder       String[]
+  dokumente    String[]
   lat          Float?
   lng          Float?
   aktiv        Boolean  @default(true)
@@ -95,4 +96,10 @@ model InseratView {
 
   @@index([inseratId])
   @@index([inseratId, createdAt])
+}
+
+model Settings {
+  id                  String   @id @default("default")
+  registrationEnabled Boolean  @default(true)
+  updatedAt           DateTime @updatedAt
 }

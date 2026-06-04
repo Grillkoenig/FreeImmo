@@ -117,6 +117,38 @@ export default async function InseratDetailPage({ params }: Props) {
             </div>
           </div>
 
+          {/* Documents */}
+          {inserat.dokumente.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">Dokumente</h2>
+              <ul className="space-y-2">
+                {inserat.dokumente.map(url => {
+                  const name = decodeURIComponent(url.split('/').pop() ?? url)
+                  return (
+                    <li key={url}>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors group"
+                      >
+                        <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM9.5 17.5h-.75v.75a.75.75 0 01-1.5 0v-.75H6.5a.75.75 0 010-1.5h.75v-.75a.75.75 0 011.5 0v.75h.75a.75.75 0 010 1.5zm4.25-1a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5H13a.75.75 0 01.75.75zm2.5 1.5h-1a.75.75 0 010-1.5h1a.75.75 0 010 1.5z" />
+                        </svg>
+                        <span className="flex-1 text-sm text-gray-700 truncate group-hover:text-gray-900">
+                          {name}
+                        </span>
+                        <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          )}
+
           {/* Location */}
           <div>
             <h2 className="text-lg font-semibold text-gray-900 mb-3">Lage</h2>

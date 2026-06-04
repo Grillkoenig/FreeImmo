@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import ImageUpload from './ImageUpload'
+import PdfUpload from './PdfUpload'
 import { createInserat, updateInserat } from '@/app/actions'
 import { KANTONE } from '@/lib/kantone'
 
@@ -22,6 +23,7 @@ type InitialData = {
   typ: string
   modus: string
   bilder: string[]
+  dokumente: string[]
   aktiv: boolean
 }
 
@@ -32,10 +34,12 @@ type Props = {
 export default function InseratForm({ initialData }: Props) {
   const isEdit = !!initialData
   const [imageUrls, setImageUrls] = useState<string[]>(initialData?.bilder ?? [])
+  const [dokumenteUrls, setDokumenteUrls] = useState<string[]>(initialData?.dokumente ?? [])
   const [aktiv, setAktiv] = useState(initialData?.aktiv ?? true)
 
   async function handleSubmit(formData: FormData) {
     imageUrls.forEach(url => formData.append('bilder', url))
+    dokumenteUrls.forEach(url => formData.append('dokumente', url))
     formData.set('aktiv', String(aktiv))
     if (isEdit) {
       formData.set('id', initialData.id)
@@ -75,6 +79,13 @@ export default function InseratForm({ initialData }: Props) {
       <section>
         <h2 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">Bilder</h2>
         <ImageUpload value={imageUrls} onChange={setImageUrls} maxFiles={10} />
+      </section>
+
+      {/* Dokumente */}
+      <section>
+        <h2 className="text-lg font-semibold text-gray-900 mb-1 pb-2 border-b border-gray-100">Dokumente</h2>
+        <p className="text-sm text-gray-500 mb-4">Grundriss, Energieausweis, Exposé o.ä. als PDF hochladen.</p>
+        <PdfUpload value={dokumenteUrls} onChange={setDokumenteUrls} maxFiles={5} />
       </section>
 
       {/* Objekt-Details */}

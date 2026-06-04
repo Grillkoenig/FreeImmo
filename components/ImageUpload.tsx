@@ -6,6 +6,7 @@ type UploadedImage = {
   url: string
   previewUrl: string
   name: string
+  rotating?: boolean
 }
 
 type UploadingImage = {
@@ -24,6 +25,7 @@ type Props = {
 
 export default function ImageUpload({ value, onChange, maxFiles = 10 }: Props) {
   const [uploading, setUploading] = useState<UploadingImage[]>([])
+  const [rotating, setRotating] = useState<Set<string>>(new Set())
   const [isDragOver, setIsDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -80,6 +82,24 @@ export default function ImageUpload({ value, onChange, maxFiles = 10 }: Props) {
 
   function removeUploaded(url: string) {
     onChange(value.filter(u => u !== url))
+  }
+
+  async function rotateImage(url: string) {
+    if (!url.startsWith('/uploads/')) return
+    setRotating(prev => new Set(prev).add(url))
+    try {
+      const res = await fetch('/api/upload/rotate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+      const data = await res.json()
+      if (res.ok && data.url) {
+        onChange(value.map(u => (u === url ? data.url : u)))
+      }
+    } finally {
+      setRotating(prev => { const s = new Set(prev); s.delete(url); return s })
+    }
   }
 
   function dismissError(id: string) {
@@ -144,11 +164,36 @@ export default function ImageUpload({ value, onChange, maxFiles = 10 }: Props) {
             <div key={img.url} className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100">
               <img src={img.previewUrl} alt={img.name} className="w-full h-full object-cover" />
 
+              {/* Spinner while rotating */}
+              {rotating.has(img.url) && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                  <svg className="w-6 h-6 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                </div>
+              )}
+
               {/* Main image badge */}
               {i === 0 && (
                 <span className="absolute bottom-1 left-1 text-[10px] font-semibold text-white bg-black/50 px-1.5 py-0.5 rounded">
                   Hauptbild
                 </span>
+              )}
+
+              {/* Rotate button */}
+              {img.url.startsWith('/uploads/') && (
+                <button
+                  type="button"
+                  onClick={() => rotateImage(img.url)}
+                  disabled={rotating.has(img.url)}
+                  className="absolute top-1 left-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80 disabled:opacity-50"
+                  aria-label="Bild drehen"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
               )}
 
               {/* Remove button */}

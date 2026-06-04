@@ -5,6 +5,9 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
 export async function register(formData: FormData) {
+  const settings = await prisma.settings.findUnique({ where: { id: 'default' } })
+  if (settings?.registrationEnabled === false) throw new Error('Die Registrierung ist derzeit gesperrt')
+
   const name = (formData.get('name') as string)?.trim()
   const email = (formData.get('email') as string)?.trim().toLowerCase()
   const password = formData.get('password') as string

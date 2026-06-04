@@ -59,3 +59,15 @@ export async function adminDeleteUser(formData: FormData) {
   await prisma.user.delete({ where: { id } })
   revalidatePath('/admin/benutzer')
 }
+
+export async function adminToggleRegistration() {
+  await requireAdmin()
+  const current = await prisma.settings.findUnique({ where: { id: 'default' } })
+  const enabled = current?.registrationEnabled ?? true
+  await prisma.settings.upsert({
+    where: { id: 'default' },
+    create: { id: 'default', registrationEnabled: !enabled },
+    update: { registrationEnabled: !enabled },
+  })
+  revalidatePath('/admin/einstellungen')
+}
