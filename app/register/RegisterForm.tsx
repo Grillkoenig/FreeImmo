@@ -14,13 +14,17 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      await register(new FormData(e.currentTarget))
+      const result = await register(new FormData(e.currentTarget))
+      if (result?.error) {
+        setError(result.error)
+        setLoading(false)
+      }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Fehler beim Registrieren'
-      // Next.js redirect throws NEXT_REDIRECT — don't catch that as error
-      if (msg.includes('NEXT_REDIRECT')) return
-      setError(msg)
-      setLoading(false)
+      const msg = err instanceof Error ? err.message : ''
+      if (!msg.includes('NEXT_REDIRECT')) {
+        setError('Fehler beim Registrieren')
+        setLoading(false)
+      }
     }
   }
 

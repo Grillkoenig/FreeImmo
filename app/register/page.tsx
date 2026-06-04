@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import RegisterForm from './RegisterForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function RegisterPage() {
   const settings = await prisma.settings.findUnique({ where: { id: 'default' } })
   const registrationEnabled = settings?.registrationEnabled ?? true

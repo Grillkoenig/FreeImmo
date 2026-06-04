@@ -56,6 +56,8 @@ model InseratView {
   id        String   @id @default(cuid())
   inseratId String
   inserat   Inserat  @relation(fields: [inseratId], references: [id], onDelete: Cascade)
+  ip        String?
+  host      String?
   createdAt DateTime @default(now())
 
   @@index([inseratId])
