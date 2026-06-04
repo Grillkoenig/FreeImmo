@@ -59,6 +59,29 @@ export async function adminDeleteUser(formData: FormData) {
   revalidatePath('/admin/benutzer')
 }
 
+export async function adminToggleUserSperre(formData: FormData) {
+  await requireAdmin()
+  const id = formData.get('id') as string
+  const user = await prisma.user.findUnique({ where: { id }, select: { gesperrt: true } })
+  if (!user) return
+  const gesperrt = !user.gesperrt
+  await prisma.user.update({ where: { id }, data: { gesperrt } })
+  if (gesperrt) {
+    // Sperren: Originalstatus sichern, dann alle deaktivieren
+    const inserate = await prisma.inserat.findMany({ where: { userId: id }, select: { id: true, aktiv: true } })
+    await Promise.all(inserate.map(i =>
+      prisma.inserat.update({ where: { id: i.id }, data: { aktivVorSperre: i.aktiv, aktiv: false } })
+    ))
+  } else {
+    // Entsperren: Originalstatus wiederherstellen
+    const inserate = await prisma.inserat.findMany({ where: { userId: id }, select: { id: true, aktivVorSperre: true } })
+    await Promise.all(inserate.map(i =>
+      prisma.inserat.update({ where: { id: i.id }, data: { aktiv: i.aktivVorSperre ?? false, aktivVorSperre: null } })
+    ))
+  }
+  revalidatePath('/admin/benutzer')
+}
+
 export async function adminToggleRegistration() {
   await requireAdmin()
   const current = await prisma.settings.findUnique({ where: { id: 'default' } })

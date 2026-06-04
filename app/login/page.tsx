@@ -30,7 +30,9 @@ function LoginForm() {
 
     setLoading(false)
 
-    if (result?.error) {
+    if (result?.error === 'ACCOUNT_GESPERRT') {
+      setError('Dein Konto wurde gesperrt. Bitte kontaktiere den Administrator.')
+    } else if (result?.error) {
       setError('E-Mail oder Passwort ist falsch.')
     } else {
       router.push(callbackUrl)

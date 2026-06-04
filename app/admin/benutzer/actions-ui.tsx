@@ -6,14 +6,17 @@ type Props = {
   id: string
   email: string
   role: string
+  gesperrt: boolean
   inserateCount: number
   setRoleAction: (formData: FormData) => Promise<void>
   deleteAction: (formData: FormData) => Promise<void>
+  sperreAction: (formData: FormData) => Promise<void>
 }
 
-export default function AdminUserActions({ id, email, role, inserateCount, setRoleAction, deleteAction }: Props) {
+export default function AdminUserActions({ id, email, role, gesperrt, inserateCount, setRoleAction, deleteAction, sperreAction }: Props) {
   const [rolePending, startRoleTransition] = useTransition()
   const [deletePending, startDeleteTransition] = useTransition()
+  const [sperrePending, startSperreTransition] = useTransition()
 
   function handleRoleToggle() {
     startRoleTransition(async () => {
@@ -33,6 +36,18 @@ export default function AdminUserActions({ id, email, role, inserateCount, setRo
     })
   }
 
+  function handleSperre() {
+    const msg = gesperrt
+      ? `Benutzer «${email}» entsperren?`
+      : `Benutzer «${email}» sperren? Alle Inserate werden deaktiviert.`
+    if (!confirm(msg)) return
+    startSperreTransition(async () => {
+      const fd = new FormData()
+      fd.set('id', id)
+      await sperreAction(fd)
+    })
+  }
+
   return (
     <div className="flex items-center gap-2">
       <button
@@ -41,6 +56,17 @@ export default function AdminUserActions({ id, email, role, inserateCount, setRo
         className="text-xs text-blue-600 border border-blue-200 rounded px-2 py-1 hover:bg-blue-50 transition-colors whitespace-nowrap disabled:opacity-50"
       >
         {rolePending ? '…' : role === 'admin' ? '→ User' : '→ Admin'}
+      </button>
+      <button
+        onClick={handleSperre}
+        disabled={sperrePending}
+        className={`text-xs border rounded px-2 py-1 transition-colors disabled:opacity-50 whitespace-nowrap ${
+          gesperrt
+            ? 'text-green-600 border-green-200 hover:bg-green-50'
+            : 'text-orange-600 border-orange-200 hover:bg-orange-50'
+        }`}
+      >
+        {sperrePending ? '…' : gesperrt ? 'Entsperren' : 'Sperren'}
       </button>
       <button
         onClick={handleDelete}

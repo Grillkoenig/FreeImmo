@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { adminSetRole, adminDeleteUser } from '@/app/admin/actions'
+import { adminSetRole, adminDeleteUser, adminToggleUserSperre } from '@/app/admin/actions'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import AdminUserActions from './actions-ui'
@@ -35,17 +35,20 @@ export default async function AdminBenutzerPage() {
             {users.map(u => {
               const isSelf = u.email === session?.user?.email
               return (
-                <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={u.id} className={`hover:bg-gray-50 transition-colors ${u.gesperrt ? 'bg-red-50' : ''}`}>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
                       <div
                         className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
-                        style={{ backgroundColor: u.role === 'admin' ? '#e8003d' : '#6b7280' }}
+                        style={{ backgroundColor: u.gesperrt ? '#dc2626' : u.role === 'admin' ? '#e8003d' : '#6b7280' }}
                       >
                         {(u.name ?? u.email).charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-medium text-gray-900 truncate max-w-[180px]">{u.name ?? '–'}</p>
+                        <p className="font-medium text-gray-900 truncate max-w-[180px]">
+                          {u.name ?? '–'}
+                          {u.gesperrt && <span className="ml-1.5 text-xs font-semibold text-red-600">gesperrt</span>}
+                        </p>
                         <p className="text-xs text-gray-400 truncate max-w-[180px]">{u.email}</p>
                       </div>
                     </div>
@@ -71,9 +74,11 @@ export default async function AdminBenutzerPage() {
                         id={u.id}
                         email={u.email}
                         role={u.role}
+                        gesperrt={u.gesperrt}
                         inserateCount={u._count.inserate}
                         setRoleAction={adminSetRole}
                         deleteAction={adminDeleteUser}
+                        sperreAction={adminToggleUserSperre}
                       />
                     )}
                   </td>

@@ -23,6 +23,7 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!user?.password) return null
+        if (user.gesperrt) throw new Error('ACCOUNT_GESPERRT')
 
         const valid = await bcrypt.compare(credentials.password, user.password)
         if (!valid) return null

@@ -37,6 +37,21 @@ export default function InseratForm({ initialData, redirectTo }: Props) {
   const [imageUrls, setImageUrls] = useState<string[]>(initialData?.bilder ?? [])
   const [dokumenteUrls, setDokumenteUrls] = useState<string[]>(initialData?.dokumente ?? [])
   const [aktiv, setAktiv] = useState(initialData?.aktiv ?? true)
+  const [kanton, setKanton] = useState(initialData?.kanton ?? '')
+  const [plzLoading, setPlzLoading] = useState(false)
+
+  async function handlePlzChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const plz = e.target.value.trim()
+    if (!/^\d{4}$/.test(plz)) return
+    setPlzLoading(true)
+    try {
+      const res = await fetch(`/api/plz?plz=${plz}`)
+      const { kanton: k } = await res.json()
+      if (k) setKanton(k)
+    } finally {
+      setPlzLoading(false)
+    }
+  }
 
   async function handleSubmit(formData: FormData) {
     imageUrls.forEach(url => formData.append('bilder', url))
@@ -130,7 +145,7 @@ export default function InseratForm({ initialData, redirectTo }: Props) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="plz" className={labelClass}>PLZ <span style={{ color: 'var(--primary)' }}>*</span></label>
-              <input id="plz" name="plz" type="text" required placeholder="8001" maxLength={6} defaultValue={initialData?.plz} className={inputClass} />
+              <input id="plz" name="plz" type="text" required placeholder="8001" maxLength={6} defaultValue={initialData?.plz} onChange={handlePlzChange} className={inputClass} />
             </div>
             <div>
               <label htmlFor="ort" className={labelClass}>Ort <span style={{ color: 'var(--primary)' }}>*</span></label>
@@ -138,8 +153,11 @@ export default function InseratForm({ initialData, redirectTo }: Props) {
             </div>
           </div>
           <div>
-            <label htmlFor="kanton" className={labelClass}>Kanton <span style={{ color: 'var(--primary)' }}>*</span></label>
-            <select id="kanton" name="kanton" required defaultValue={initialData?.kanton ?? ''} className={inputClass}>
+            <label htmlFor="kanton" className={labelClass}>
+              Kanton <span style={{ color: 'var(--primary)' }}>*</span>
+              {plzLoading && <span className="ml-2 text-xs text-gray-400">wird ermittelt…</span>}
+            </label>
+            <select id="kanton" name="kanton" required value={kanton} onChange={e => setKanton(e.target.value)} className={inputClass}>
               <option value="">Kanton wählen…</option>
               {KANTONE.map(k => (
                 <option key={k.kuerzel} value={k.kuerzel}>{k.kuerzel} – {k.name}</option>

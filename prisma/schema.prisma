@@ -15,6 +15,7 @@ model User {
   image         String?
   password      String?
   role          String    @default("user")
+  gesperrt      Boolean   @default(false)
   inserate      Inserat[]
   createdAt     DateTime  @default(now())
 }
@@ -45,6 +46,7 @@ model Inserat {
   lat          Float?
   lng          Float?
   aktiv        Boolean  @default(true)
+  aktivVorSperre Boolean?
   userId       String
   user         User       @relation(fields: [userId], references: [id])
   views        InseratView[]
