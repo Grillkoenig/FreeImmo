@@ -82,6 +82,29 @@ function hasMagicBytes(buf: Buffer, mimeType: string): boolean {
   return sigs.some(sig => sig.length > 0 && sig.every((byte, i) => buf[i] === byte))
 }
 
+// --- PDF content scanning -------------------------------------------------
+// Searches the raw PDF structure for patterns that indicate executable or
+// exfiltrating content. latin1 decoding maps every byte 0-255 to a character,
+// making regex pattern matching reliable on binary PDF streams.
+//
+// Patterns:
+//   /JavaScript  — action type that runs JS inside the viewer
+//   /JS          — the key holding the actual JS code string/stream
+//   /Launch      — action that executes an external program or URL
+const DANGEROUS_PDF_PATTERNS = [
+  /\/JavaScript[\s<([\]]/,
+  /\/JS[\s<([\]]/,
+  /\/Launch[\s<([\]]/,
+]
+
+function scanPdf(buf: Buffer): string | null {
+  const text = buf.toString('latin1')
+  for (const pattern of DANGEROUS_PDF_PATTERNS) {
+    if (pattern.test(text)) return 'PDF enthält nicht erlaubten Inhalt'
+  }
+  return null
+}
+
 // --------------------------------------------------------------------------
 
 export async function POST(req: NextRequest) {
@@ -137,6 +160,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (isPdf) {
+      const scanError = scanPdf(buffer)
+      if (scanError) {
+        return NextResponse.json({ error: `${scanError}: ${file.name}` }, { status: 400 })
+      }
       const filename = `${randomUUID()}.pdf`
       await writeFile(join(uploadDir, filename), buffer)
       urls.push(`/uploads/${filename}`)
