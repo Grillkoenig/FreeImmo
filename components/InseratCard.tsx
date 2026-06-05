@@ -46,6 +46,9 @@ export default function InseratCard({ inserat }: { inserat: Inserat }) {
         <p className="text-gray-500 text-sm mt-1">
           {inserat.strasse}, {inserat.plz} {inserat.ort}
         </p>
+        <p className="text-xs text-gray-400 mt-1">
+          {{ wohnung: 'Wohnung', haus: 'Haus', studio: 'Studio', studentenwohnung: 'Studentenwohnung', gewerbe: 'Gewerbe' }[inserat.typ] ?? inserat.typ}
+        </p>
 
         <div className="flex items-center gap-4 mt-3 text-sm text-gray-600">
           <span className="flex items-center gap-1">

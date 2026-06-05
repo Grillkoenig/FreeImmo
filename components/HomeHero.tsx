@@ -113,6 +113,7 @@ export default function HomeHero({ total, orteCount, viewsHeute, viewsJahr }: Pr
                 <option value="wohnung">Wohnung</option>
                 <option value="haus">Haus</option>
                 <option value="studio">Studio</option>
+                <option value="studentenwohnung">Studentenwohnung</option>
                 <option value="gewerbe">Gewerbe</option>
               </select>
 
