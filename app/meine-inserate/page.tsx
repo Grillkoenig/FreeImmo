@@ -100,6 +100,11 @@ export default async function MeineInseratePage({ searchParams }: Props) {
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${i.aktiv ? 'bg-green-400' : 'bg-gray-300'}`} />
                   <span className="text-xs text-gray-400">{i.aktiv ? 'Aktiv' : 'Inaktiv'}</span>
+                  {!i.geprueft && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-yellow-100 text-yellow-700">
+                      Ausstehend
+                    </span>
+                  )}
                   <span className="text-xs text-gray-300">·</span>
                   <span className="text-xs text-gray-400">
                     {i.modus === 'mieten' ? 'Mieten' : 'Kaufen'} · {i.typ.charAt(0).toUpperCase() + i.typ.slice(1)}

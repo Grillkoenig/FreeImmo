@@ -14,7 +14,7 @@ function startOfToday() {
 async function getLatestInserate() {
   const today = startOfToday()
   const inserate = await prisma.inserat.findMany({
-    where: { aktiv: true },
+    where: { aktiv: true, geprueft: true },
     orderBy: { createdAt: 'desc' },
     take: 6,
     include: { _count: { select: { views: true } } },
@@ -34,8 +34,8 @@ async function getStats() {
   const startOfYear = new Date(new Date().getFullYear(), 0, 1)
 
   const [total, orte, viewsHeute, viewsJahr] = await Promise.all([
-    prisma.inserat.count({ where: { aktiv: true } }),
-    prisma.inserat.findMany({ where: { aktiv: true }, select: { ort: true }, distinct: ['ort'] }),
+    prisma.inserat.count({ where: { aktiv: true, geprueft: true } }),
+    prisma.inserat.findMany({ where: { aktiv: true, geprueft: true }, select: { ort: true }, distinct: ['ort'] }),
     prisma.inseratView.count({ where: { createdAt: { gte: today } } }),
     prisma.inseratView.count({ where: { createdAt: { gte: startOfYear } } }),
   ])

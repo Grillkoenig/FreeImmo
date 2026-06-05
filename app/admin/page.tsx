@@ -6,6 +6,7 @@ async function getStats() {
     totalUsers,
     totalInserate,
     activeInserate,
+    ausstehend,
     inserateByTyp,
     inserateByModus,
     newUsersLast7,
@@ -14,13 +15,14 @@ async function getStats() {
     prisma.user.count(),
     prisma.inserat.count(),
     prisma.inserat.count({ where: { aktiv: true } }),
+    prisma.inserat.count({ where: { geprueft: false } }),
     prisma.inserat.groupBy({ by: ['typ'], _count: { _all: true } }),
     prisma.inserat.groupBy({ by: ['modus'], _count: { _all: true } }),
     prisma.user.count({ where: { createdAt: { gte: new Date(Date.now() - 7 * 864e5) } } }),
     prisma.inserat.count({ where: { createdAt: { gte: new Date(Date.now() - 7 * 864e5) } } }),
   ])
 
-  return { totalUsers, totalInserate, activeInserate, inserateByTyp, inserateByModus, newUsersLast7, newInserateLast7 }
+  return { totalUsers, totalInserate, activeInserate, ausstehend, inserateByTyp, inserateByModus, newUsersLast7, newInserateLast7 }
 }
 
 async function getRecent() {
@@ -51,7 +53,7 @@ export default async function AdminDashboard() {
     { label: 'Benutzer gesamt', value: stats.totalUsers, sub: `+${stats.newUsersLast7} diese Woche`, color: 'bg-blue-50 text-blue-700' },
     { label: 'Inserate gesamt', value: stats.totalInserate, sub: `+${stats.newInserateLast7} diese Woche`, color: 'bg-purple-50 text-purple-700' },
     { label: 'Aktive Inserate', value: stats.activeInserate, sub: `${stats.totalInserate - stats.activeInserate} inaktiv`, color: 'bg-green-50 text-green-700' },
-    { label: 'Inaktive Inserate', value: stats.totalInserate - stats.activeInserate, sub: 'Deaktiviert', color: 'bg-gray-50 text-gray-700' },
+    { label: 'Ausstehend', value: stats.ausstehend, sub: 'Warten auf Freigabe', color: 'bg-yellow-50 text-yellow-700' },
   ]
 
   return (

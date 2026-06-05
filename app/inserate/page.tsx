@@ -16,7 +16,7 @@ type SearchParams = {
 }
 
 async function getInserate(params: SearchParams) {
-  const where: Record<string, unknown> = { aktiv: true }
+  const where: Record<string, unknown> = { aktiv: true, geprueft: true }
   if (params.ort) {
     where.OR = [
       { ort: { contains: params.ort, mode: 'insensitive' } },

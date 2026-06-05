@@ -23,6 +23,8 @@ export default async function InseratDetailPage({ params }: Props) {
 
   if (!inserat || !inserat.aktiv) notFound()
   const isOwner = session?.user?.id === inserat.userId
+  const isAdmin = session?.user?.role === 'admin'
+  if (!inserat.geprueft && !isOwner && !isAdmin) notFound()
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -65,6 +67,18 @@ export default async function InseratDetailPage({ params }: Props) {
           </div>
         )}
       </div>
+
+      {!inserat.geprueft && (isOwner || isAdmin) && (
+        <div className="mb-6 flex items-start gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-800">
+          <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>
+            Dieses Inserat wird zurzeit geprüft und ist noch nicht öffentlich sichtbar.
+            {isAdmin && <> <a href="/admin/inserate" className="underline font-medium">Im Admin-Bereich freigeben →</a></>}
+          </span>
+        </div>
+      )}
 
       <TrackView inseratId={id} />
 

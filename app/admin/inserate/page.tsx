@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-import { adminToggleInserat, adminDeleteInserat } from '@/app/admin/actions'
+import { adminToggleInserat, adminDeleteInserat, adminApproveInserat } from '@/app/admin/actions'
 import AdminInserateActions from './actions-ui'
 
 export default async function AdminInseratePage() {
@@ -24,6 +24,7 @@ export default async function AdminInseratePage() {
               <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Anbieter</th>
               <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Typ / Modus</th>
               <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Preis</th>
+              <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Prüfung</th>
               <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
               <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Aktionen</th>
             </tr>
@@ -47,6 +48,23 @@ export default async function AdminInseratePage() {
                 </td>
                 <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">
                   CHF {i.preis.toLocaleString('de-CH')}
+                </td>
+                <td className="px-4 py-3">
+                  {i.geprueft ? (
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                      Freigegeben
+                    </span>
+                  ) : (
+                    <form action={adminApproveInserat} className="inline">
+                      <input type="hidden" name="id" value={i.id} />
+                      <button
+                        type="submit"
+                        className="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 hover:bg-yellow-200 cursor-pointer transition-colors"
+                      >
+                        Freigeben
+                      </button>
+                    </form>
+                  )}
                 </td>
                 <td className="px-4 py-3">
                   <form action={adminToggleInserat}>

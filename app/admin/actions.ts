@@ -29,6 +29,13 @@ export async function adminToggleInserat(formData: FormData) {
   revalidatePath('/admin/inserate')
 }
 
+export async function adminApproveInserat(formData: FormData) {
+  await requireAdmin()
+  const id = formData.get('id') as string
+  await prisma.inserat.update({ where: { id }, data: { geprueft: true } })
+  revalidatePath('/admin/inserate')
+}
+
 export async function adminDeleteInserat(formData: FormData) {
   await requireAdmin()
   const id = formData.get('id') as string
